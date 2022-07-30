@@ -3,6 +3,7 @@ import {
   Course,
   CourseWithReviewsFull,
   CourseWithReviewsStats,
+  Semester,
 } from '../@types';
 
 export enum CourseEnrichmentOption {
@@ -41,6 +42,37 @@ export async function getCourseCodes(): Promise<CourseCodes> {
   `;
 
   const response = await sanityClient.fetch<CourseCodes>(query);
+  return response;
+}
+
+type CourseNames = Pick<Course, 'id' | 'code' | 'name'>[];
+
+export async function getCourseNames(): Promise<CourseNames> {
+  const query = `
+  *[_type == 'course'] {
+      "id": _id,
+      "code": department + '-' + number,
+      name
+    } | order(name)
+  `;
+
+  const response = await sanityClient.fetch<CourseNames>(query);
+  return response;
+}
+
+export async function getRecentSemesters(
+  limit = 3,
+): Promise<Semester[]> {
+  const query = `
+  *[_type == 'semester' && startDate <= now()]{
+    "id": _id,
+    ...
+  } | order(startDate desc)[0...$limit]
+  `;
+
+  const response = await sanityClient.fetch<Semester[]>(query, {
+    limit,
+  });
   return response;
 }
 

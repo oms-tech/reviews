@@ -53,6 +53,7 @@ const githubMenuItems = [
 
 export default function Header(): JSX.Element {
   const router = useRouter();
+  const [newReviewURL, setNewReviewURL] = useState<URL>();
   const [copiedContactInfo, setCopiedContactInfo] = useState<string>();
 
   useEffect(() => {
@@ -64,6 +65,17 @@ export default function Header(): JSX.Element {
       clearTimeout(timeoutId);
     };
   }, [copiedContactInfo]);
+
+  useEffect(() => {
+    const url = new URL(`${window.location.origin}/reviews/new`);
+    const { courseCode } = router.query;
+
+    if (typeof courseCode === 'string') {
+      url.searchParams.append('course', courseCode);
+    }
+
+    setNewReviewURL(url);
+  }, [router]);
 
   return (
     <Disclosure as="nav" className="bg-white shadow">
@@ -189,11 +201,10 @@ export default function Header(): JSX.Element {
               </div>
               <div className="flex items-center">
                 <div className="flex-shrink-0">
-                  <Link href="/" passHref>
+                  <Link href={newReviewURL ?? '/'} passHref>
                     <a
                       href="replace"
-                      className="relative pointer-events-none inline-flex items-center px-4 py-2 border border-dotted border-indigo-600 rounded-md shadow-sm text-sm font-medium text-indigo-300 hover:blur-sm hover:cursor-not-allowed"
-                      tabIndex={-1}
+                      className="relative inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                     >
                       <PlusSmIcon
                         className="-ml-1 mr-2 h-5 w-5"
