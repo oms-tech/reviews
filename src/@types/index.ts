@@ -7,6 +7,7 @@ export interface Semester {
 export interface Review {
   id: string;
   body: string;
+  authorId: string; // encrypted GT username of author
   created: string; // ISO Datetime string
   rating: number | null;
   workload: number | null;
